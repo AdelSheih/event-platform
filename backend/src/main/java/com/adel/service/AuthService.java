@@ -20,6 +20,9 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final AuthResponse authResponse;
+    private final User user;
+
 
     public AuthResponse register(RegisterRequest request) {
         var user = User.builder()
@@ -31,7 +34,7 @@ public class AuthService {
                 .build();
         authRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
-        return AuthResponse.builder().token(jwtToken).build();
+        return new AuthResponse(jwtToken);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -41,9 +44,14 @@ public class AuthService {
                         request.getPassword()
                 )
         );
-        var user = authRepository.findByEmail(request.getEmail())
-                .orElseThrow(); // Should not happen if authentication is successful
+        
         var jwtToken = jwtService.generateToken(user);
-        return AuthResponse.builder().token(jwtToken).build();
+        return new AuthResponse(jwtToken);
     }
+
+    public Object findByEmail(String email) {
+        return authRepository.findByEmail(email);
+    }
+
+    
 }

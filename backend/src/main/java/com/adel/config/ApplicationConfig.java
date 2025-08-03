@@ -1,6 +1,8 @@
 package com.adel.config;
 
 import com.adel.repository.AuthRepository;
+import com.adel.service.AuthService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +20,7 @@ public class ApplicationConfig {
 
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -27,10 +30,9 @@ public class ApplicationConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder);
-        return authProvider;
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(passwordEncoder);
+        provider.setPasswordEncoder(passwordEncoder);
+        return provider;
     }
 
     @Bean
